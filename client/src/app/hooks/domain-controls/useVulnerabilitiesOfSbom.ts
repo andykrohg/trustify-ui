@@ -54,7 +54,7 @@ type PurlAnalysis =
   | { isOrphan: true; parentName: string }
   | { isOrphan: false; purlSummary: PurlSummary };
 
-interface VulnerabilityOfSbom {
+export interface VulnerabilityOfSbom {
   vulnerability: SbomStatus;
   vulnerabilityStatus: VulnerabilityStatus;
   advisories: Map<string, AdvisoryFromAnalysis>;
@@ -294,12 +294,15 @@ const advisoryToModels = (advisories: SbomAdvisory[]) => {
   };
 };
 
-export const useVulnerabilitiesOfSbom = (sbomId: string) => {
+export const useVulnerabilitiesOfSbom = (
+  sbomId: string,
+  includeResolved = false,
+) => {
   const {
     advisories,
     isFetching: isFetchingAdvisories,
     fetchError: fetchErrorAdvisories,
-  } = useFetchSbomsAdvisory(sbomId);
+  } = useFetchSbomsAdvisory(sbomId, includeResolved);
 
   const result = React.useMemo(() => {
     return advisoryToModels(advisories || []);
@@ -310,6 +313,42 @@ export const useVulnerabilitiesOfSbom = (sbomId: string) => {
     isFetching: isFetchingAdvisories,
     fetchError: fetchErrorAdvisories,
   };
+};
+
+export type PurlVexResolution = {
+  status: VulnerabilityStatus;
+  advisory: AdvisoryHead;
+};
+
+export const buildVexByPurl = (
+  vulnerabilities: VulnerabilityOfSbom[],
+): Map<string, Map<string, PurlVexResolution>> => {
+  const resolvingEntries = vulnerabilities.filter(
+    (item) =>
+      item.vulnerabilityStatus === "not_affected" ||
+      item.vulnerabilityStatus === "known_not_affected" ||
+      item.vulnerabilityStatus === "fixed",
+  );
+  const result = new Map<string, Map<string, PurlVexResolution>>();
+  for (const entry of resolvingEntries) {
+    const vulnId = entry.vulnerability.identifier;
+    let purlMap = result.get(vulnId);
+    if (!purlMap) {
+      purlMap = new Map();
+      result.set(vulnId, purlMap);
+    }
+    const advisory = Array.from(entry.advisories.values())[0]?.advisory;
+    if (!advisory) continue;
+    for (const p of entry.purls.values()) {
+      if (!p.isOrphan) {
+        purlMap.set(p.purlSummary.purl, {
+          status: entry.vulnerabilityStatus,
+          advisory,
+        });
+      }
+    }
+  }
+  return result;
 };
 
 export const useVulnerabilitiesOfSboms = (sbomIds: string[]) => {
