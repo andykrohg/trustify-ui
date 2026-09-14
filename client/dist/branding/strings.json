@@ -1,11 +1,11 @@
 {
   "application": {
-    "title": "Trustification",
-    "name": "Trustification UI",
-    "description": "Trustification UI"
+    "title": "Red Hat Trusted Profile Analyzer",
+    "name": "Red Hat Trusted Profile Analyzer UI",
+    "description": "Red Hat Trusted Profile Analyzer UI"
   },
   "about": {
-    "displayName": "Trustification",
+    "displayName": "Red Hat Trusted Profile Analyzer",
     "imageSrc": "<%= brandingRoot %>/images/masthead-logo.svg",
     "documentationUrl": "https://trustification.io/"
   },

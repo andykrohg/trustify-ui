@@ -33,12 +33,12 @@ const TRUSTIFICATION_ENV = buildTrustificationEnv(process.env);
 
 const strings = {
   application: {
-    title: 'Trustification',
-    name: 'Trustification UI',
-    description: 'Trustification UI'
+    title: 'Red Hat Trusted Profile Analyzer',
+    name: 'Red Hat Trusted Profile Analyzer UI',
+    description: 'Red Hat Trusted Profile Analyzer UI'
   },
   about: {
-    displayName: 'Trustification',
+    displayName: 'Red Hat Trusted Profile Analyzer',
     imageSrc: 'branding/images/masthead-logo.svg',
     documentationUrl: 'https://trustification.io/'
   },
